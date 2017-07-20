@@ -1,6 +1,7 @@
 package Hue::Bridge;
 use Modern::Perl;
-use Hue::UPNP;
+use Data::Dump;
+use Hue::UPnP qw(discover_bridge);
 use Hue::Light;
 use Moo;
 with ('Hue::UserAgent');
@@ -9,7 +10,16 @@ has host => (is => 'lazy');
 has user => (is => 'lazy');
 has url => (is => 'lazy');
 
-sub _build_host { Hue::UPNP->discover_bridge }
+sub BUILD {
+    my ($self, $args) = @_;
+    die "host is undef and UPnP discovery failed. Must supply host, or set HUE_HOST"
+	unless(defined $self->host);
+    die "user is undef. Must supply user or set HUE_USER"
+	unless(defined $self->user);
+}
+
+sub _build_host { $ENV{HUE_HOST} // discover_bridge }
+
 sub _build_user { $ENV{HUE_USER} }
 
 sub _build_url {
@@ -17,7 +27,6 @@ sub _build_url {
     return 'http://' . join('/', $self->host, 'api', $self->user);
 }
 
-use Data::Dump;
 
 sub get_lights {
     my $self = shift;

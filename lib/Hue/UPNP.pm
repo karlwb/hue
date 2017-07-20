@@ -1,9 +1,11 @@
-package Hue::UPNP;
+package Hue::UPnP;
 use Modern::Perl;
 use IO::Socket::Multicast;
 use IO::Select;
-use Moo;
+use Exporter qw(import);
 
+@EXPORT_OK = qw( discover_bridge );
+ 
 sub discover_bridge {
     my $host = '239.255.255.250'; # ssdp ipv4 site-local addr
     my $port = 1900;

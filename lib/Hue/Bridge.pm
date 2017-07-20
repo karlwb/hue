@@ -31,6 +31,7 @@ sub _build_url {
 sub get_lights {
     my $self = shift;
     my $matching = shift;
+    my $match_type = ref($matching);
     my $res = $self->_get(join('/', $self->url, 'lights'));
 
     my @lights = ();
@@ -38,8 +39,11 @@ sub get_lights {
 	my %data = %{$res->{$id}};
 	my $keep = 1;
 	if ($matching) {
-	    if ($data{name} !~ m/$matching/i) {
-		$keep = 0;
+	    if ( $match_type eq 'Regexp' ) {
+		$keep = 0 if $data{name} !~ $matching;
+	    }
+	    elsif ( $match_type eq '' ) {
+		$keep = 0 if $data{name} !~ m/$matching/i;
 	    }
 	}
 	push @lights, Hue::Light->new(%data, id=>$id, bridge=>$self) if $keep;

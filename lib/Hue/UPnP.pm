@@ -4,7 +4,7 @@ use IO::Socket::Multicast;
 use IO::Select;
 use Exporter qw(import);
 
-@EXPORT_OK = qw( discover_bridge );
+our @EXPORT_OK = qw( discover_bridge );
  
 sub discover_bridge {
     my $host = '239.255.255.250'; # ssdp ipv4 site-local addr
@@ -27,7 +27,7 @@ sub discover_bridge {
     $sock->mcast_add($host);    
     $sock->mcast_send($q, $hostport);
 
-    my $bridge = '';
+    my $bridge;
     while ($io->can_read($timeout)) {
 	my $msg = '';
 	$sock->recv($msg, 1024);
